@@ -44,7 +44,7 @@ Where a.PropertyAddress is null
 
 
 
----Breaking out Address into Indivudual Columns (Address, City, State)
+---Breaking out Address into Individual Columns (Address, City, State)
 
 Select *
 From PortfolioProject.dbo.NashvilleHousing
