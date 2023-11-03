@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 
-df = pd.read_excel(r'\\xxxxxxxxxxxxx\HIX0332 - MA21 Notice ID_D2023-08-04.xlsx', dtype={'MEMBER_SSN': str, 'NOTICE_ID': str, 'MAIL_ZIP': str, 'HOME_ZIP': str, 'MEMBER_ACTIVE_ID_MEDICAID': str})
+df = pd.read_excel(r'\\xxxxxxxxxxxxx\Application Data 2023-08-04.xlsx', dtype={'MEMBER_SSN': str, 'NOTICE_ID': str, 'MAIL_ZIP': str, 'HOME_ZIP': str, 'MEMBER_ACTIVE_ID_MEDICAID': str})
 
 #Define folder path
 folder_name = datetime.today().strftime('%Y %m %d')
@@ -80,7 +80,7 @@ df['MAIL_ZIP'] = df['MAIL_ZIP'].str[:5]
 df['HOME_ZIP'] = df['HOME_ZIP'].str[:5]
 
 #Set the Excel writer object
-writer = pd.ExcelWriter(r'\\xxxxxxxxxxxxx\OPERATIONS\2023 08 04\2023 08 04 HIX0332 - MA21 Notice ID.xlsx', engine = 'xlsxwriter')
+writer = pd.ExcelWriter(r'\\xxxxxxxxxxxxx\OPERATIONS\2023 08 04\2023 08 04 Application Data.xlsx', engine = 'xlsxwriter')
 df2= df2.to_excel(writer, sheet_name = 'Sheet1', index = False)
 workbook= writer.book
 worksheet = writer.sheets['Sheet1']
