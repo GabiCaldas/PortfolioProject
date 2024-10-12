@@ -1,0 +1,166 @@
+import pandas as pd
+from sqlalchemy import create_engine
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+
+# Desired URL
+url = "https://health.ri.gov/find/providers/"
+
+# Set Chrome options for headless mode
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # Run in headless mode
+chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+# Overcome limited resource problems
+chrome_options.add_argument("--disable-dev-shm-usage")
+
+# Create a new Chrome session
+driver = webdriver.Chrome(options=chrome_options)
+driver.implicitly_wait(10)
+driver.get(url)
+
+# Wait for the page to load
+time.sleep(1)
+
+# Open a file to write the results
+provider_links = []  # List to hold all provider links
+
+# Collect provider links
+while True:  
+    provider_elements = driver.find_elements(
+        By.CSS_SELECTOR, "a[href^='results.php']")
+
+    for provider in provider_elements:
+        name = provider.text  # Get the provider name
+        link = provider.get_attribute('href')  # Get the provider link
+        provider_links.append((name, link))  # Store name and link as a tuple
+
+    # Try to find the "Next" button
+    try:
+        next_page = driver.find_element(By.CLASS_NAME, "next")
+        if "disabled" in next_page.get_attribute("class"):
+            break  # Exit loop if the "Next" button is disabled
+        next_page.click()  # Click the "Next" button
+        time.sleep(2)  # Wait for the next page to load
+    except Exception as e:
+        print(f"Could not find the next page button: {e}")
+        break  # Exit loop if the next page button is not found
+
+# Open the CSV file for writing
+with open('output.csv', 'w', encoding='utf-8') as f:
+    # Write header
+    f.write("Name, Gender, License No, Status, Date Issued, Expiration Date, Graduation Date, License Type, Specialty\n")
+
+    # Now iterate through each collected provider link
+    for name, link in provider_links:
+        driver.get(link)  # Navigate to the provider's link
+        time.sleep(2)  # Wait for the provider page to load
+
+        # Initialize variables
+        gender = ""
+        license_no = ""
+        status = ""
+        date_issued = ""
+        expiration_date = ""
+        graduation_date = ""
+        license_type = ""
+        specialty = ""
+
+        # Extract details from the div with id="details"
+        try:
+            details = driver.find_element(By.ID, "details")
+
+            # Extract relevant information
+            gender = details.find_element(
+                By.XPATH, ".//li[contains(text(), 'Gender')]").text.split(": ")[1]
+            license_info = details.find_element(
+                By.XPATH, ".//li[contains(text(), 'License Information')]")
+            license_no = license_info.find_element(
+                By.XPATH, ".//li[contains(text(), 'License No')]").text.split(": ")[1]
+            status = license_info.find_element(
+                By.XPATH, ".//li[contains(text(), 'Status')]").text.split(": ")[1]
+            date_issued = license_info.find_element(
+                By.XPATH, ".//li[contains(text(), 'Date Issued')]").text.split(": ")[1]
+            expiration_date = license_info.find_element(
+                By.XPATH, ".//li[contains(text(), 'Expiration Date')]").text.split(": ")[1]
+            graduation_date = details.find_element(
+                By.XPATH, ".//li[contains(text(), 'Year Graduated')]").text.split(": ")[1]
+
+            try:
+                specialty_info = driver.find_element(
+                    By.ID, "specialty")  # New section
+
+                license_type = specialty_info.find_element(
+                    By.XPATH, ".//h3[contains(text(), 'License Type')]").text.split(": ")[1]
+                specialty = specialty_info.find_element(
+                    By.XPATH, ".//h3[contains(text(), 'Specialty')]").text.split(": ")[1]
+
+            except Exception:
+                license_type = ""
+                specialty = ""
+
+            # Write extracted details to the file
+            f.write(
+                f"{name}, {gender}, {license_no}, {status}, {date_issued}, {expiration_date}, {graduation_date}, {license_type}, {specialty}\n")
+
+        except Exception as e:
+            print(f"Error extracting data for {name}: {e}")
+
+        driver.back()  # Go back to the provider list page
+        time.sleep(2)  # Wait for the list page to load
+
+# Close the browser
+driver.quit()
+
+file_path = r'<user_directory>/<output_file>.csv'
+df = pd.read_csv(file_path)
+
+# Process DataFrame
+df['created_at'] = pd.Timestamp.now()
+df['Name'] = df['Name'].str.title()
+df = df.rename(columns={
+    ' Name': 'name',
+    ' Gender': 'gender',
+    ' License No': 'license_no',
+    ' Status': 'status',
+    ' Date Issued': 'date_issued',
+    ' Expiration Date': 'exp_date',
+    ' Graduation Date': 'graduation_date',
+    ' License Type': 'license_type',
+    ' Specialty': 'specialty'
+})
+
+
+# Data validation function
+def validate_dataframe(df):
+    if df.isnull().values.any():
+        print("DataFrame contains missing values.")
+
+    if df.duplicated(subset=['license_no', 'specialty', 'license_type']).any():
+        print("DataFrame contains duplicate entries for license number and specialty.")
+        # Drop duplicates, keeping the first occurrence
+        df = df.drop_duplicates(subset=['license_no', 'specialty', 'license_type'], keep='first', inplace= True)
+
+
+# Validate the DataFrame
+validate_dataframe(df)
+
+# Database connection parameters
+DRIVER_NAME = 'ODBC Driver 18 for SQL Server'
+SERVER_NAME = '<server_name>'
+DATABASE_NAME = '<database_name>'
+TABLE_NAME = 'provider_demo'
+
+# Create the connection string for SQLAlchemy
+conn_str = f'mssql+pyodbc://@{SERVER_NAME}/{DATABASE_NAME}?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'
+
+# Establish a SQLAlchemy engine
+engine = create_engine(conn_str)
+
+# Write DataFrame to SQL Server table
+df.to_sql(name=TABLE_NAME, con=engine, if_exists='replace', index=False)
+
+# Dispose of the engine to release resources
+engine.dispose()
