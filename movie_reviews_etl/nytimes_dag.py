@@ -10,7 +10,7 @@ default_args = {
     'owner': 'airflow',  # Owner of the DAG
     'depends_on_past': False,  # Whether to depend on the success of previous runs
     'start_date': datetime(2024, 10, 15),  # The start date for the DAG execution
-    'email': ['gabrielcaldas@live.com'],  # Email address to send notifications
+    'email': ['xxxxxxx@xxxx.com'],  # Email address to send notifications
     'email_on_failure': False,  # Whether to send email on task failure
     'email_on_retry': False,  # Whether to send email on task retry
     'retries': 1,  # Number of retries if the task fails
