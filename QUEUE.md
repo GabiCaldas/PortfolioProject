@@ -2,6 +2,6 @@
 
 ## Queue
 - [x] #2
-- [ ] #1
+- [x] #1
 
 <!-- Add issues below — one per line, highest priority first -->
