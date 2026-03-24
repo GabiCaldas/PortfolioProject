@@ -73,5 +73,4 @@ htmlcov/
 .nyc_output/
 
 # Build output
-dist/
 out/
