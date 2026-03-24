@@ -50,10 +50,10 @@ Apache Airflow DAG that extracts movie review data from the New York Times Artic
 
 2. Install Python dependencies:
    ```bash
-   pip install pandas numpy matplotlib seaborn sqlalchemy selenium openpyxl s3fs apache-airflow
+   pip install pandas numpy matplotlib seaborn sqlalchemy selenium openpyxl xlsxwriter requests s3fs apache-airflow
    ```
 
-3. For the **NYT Movie Reviews ETL**, create a `config.json` file inside `movie_reviews_etl/`:
+3. For the **NYT Movie Reviews ETL**, create a `config.json` file inside `movie_reviews_etl/` (the script reads it from the working directory):
    ```json
    {
      "NYT_API_KEY": "your_api_key_here"
