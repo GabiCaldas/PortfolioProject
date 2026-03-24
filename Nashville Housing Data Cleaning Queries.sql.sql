@@ -27,11 +27,12 @@ UPDATE NashvilleHousing
 SET SaleDate = CONVERT(Date, SaleDate)
 
 
--- Add a dedicated converted-date column to guarantee the change sticks
+-- Add a dedicated converted-date column as an alternative approach
 ALTER TABLE NashvilleHousing
 Add SaleDateUpdated Date;
 
--- Populate the new column with the converted date values
+-- Populate the pre-existing SaleDateConverted column with the converted date values
+-- (Note: SaleDateUpdated above is a separate column added for future use)
 UPDATE NashvilleHousing
 SET SaleDateConverted = CONVERT(Date, SaleDate)
 
@@ -53,7 +54,7 @@ order by ParcelID
 -- Identify rows where PropertyAddress is null and show the
 -- matching non-null address from a sibling record (same ParcelID,
 -- different UniqueID). ISNULL returns the fallback value.
-Select a.parcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress, b.PropertyAddress)
+Select a.parcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress, b.PropertyAddress) AS FilledPropertyAddress
 From PortfolioProject.dbo.NashvilleHousing a
 JOIN PortfolioProject.dbo.NashvilleHousing b
 	on a.ParcelID = b.ParcelID
@@ -91,7 +92,7 @@ From PortfolioProject.dbo.NashvilleHousing
 --   Part 2: everything after the comma   -> city name
 SELECT
 SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress)-1) as Address
-, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1 , LEN(PropertyAddress))as City
+, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1 , LEN(PropertyAddress)) as City
 
 From PortfolioProject.dbo.NashvilleHousing
 
@@ -129,9 +130,9 @@ From PortfolioProject.dbo.NashvilleHousing
 -- PARSENAME splits on '.'; replace commas with '.' first.
 -- Index 3 = street, 2 = city, 1 = state (PARSENAME counts right-to-left)
 SELECT
-PARSENAME(REPLACE(OwnerAddress, ',', '.'), 3)
-,PARSENAME(REPLACE(OwnerAddress, ',', '.'), 2)
-,PARSENAME(REPLACE(OwnerAddress, ',', '.'), 1)
+PARSENAME(REPLACE(OwnerAddress, ',', '.'), 3) AS OwnerSplitAddress
+,PARSENAME(REPLACE(OwnerAddress, ',', '.'), 2) AS OwnerSplitCity
+,PARSENAME(REPLACE(OwnerAddress, ',', '.'), 1) AS OwnerSplitState
 From PortfolioProject.dbo.NashvilleHousing
 
 
@@ -185,7 +186,7 @@ From PortfolioProject.dbo.NashvilleHousing
 
 -- Apply the transformation: replace Y->Yes, N->No
 UPDATE NashvilleHousing
-SET SoldAsVacant= CASE When SoldAsVacant = 'Y' THEN 'Yes'
+SET SoldAsVacant = CASE When SoldAsVacant = 'Y' THEN 'Yes'
 		When SoldAsVacant = 'N' THEN 'No'
 		ELSE SoldAsVacant
 		END
