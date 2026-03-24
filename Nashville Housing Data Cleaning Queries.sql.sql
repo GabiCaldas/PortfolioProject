@@ -91,7 +91,7 @@ From PortfolioProject.dbo.NashvilleHousing
 --   Part 2: everything after the comma   -> city name
 SELECT
 SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress)-1) as Address
-, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1 , LEN(PropertyAddress))as Address
+, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1 , LEN(PropertyAddress))as City
 
 From PortfolioProject.dbo.NashvilleHousing
 
@@ -240,7 +240,7 @@ From PortfolioProject.dbo.NashvilleHousing
 -- ============================================================
 
 -- Preview table before column removal
-Select*
+Select *
 From PortfolioProject.dbo.NashvilleHousing
 
 -- Drop the raw/redundant columns
