@@ -1,6 +1,7 @@
 # Agent Issue Queue
 
 ## Queue
+- [ ] #6
 - [x] #5
 - [x] #2
 - [x] #1
