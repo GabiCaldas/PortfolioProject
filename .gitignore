@@ -74,6 +74,3 @@ htmlcov/
 
 # Build output
 out/
-
-# Telegram bot state
-.telegram-last-id
