@@ -1,0 +1,23 @@
+This is a personal data engineering portfolio repository containing Python and SQL projects.
+
+Repository structure:
+- Most files sit at the root level (flat structure)
+- One subdirectory exists for a specific project — respect this structure and do not reorganize files
+
+Language and style guidelines:
+- Python: follow PEP 8 conventions, match the existing code style in the file you are editing
+- SQL: use uppercase for SQL keywords (SELECT, FROM, WHERE, etc.), match existing formatting
+- Do not introduce new libraries or dependencies unless the issue explicitly requires it
+
+Implementation rules:
+- Keep changes minimal and focused — only modify what the issue asks for
+- Do not refactor, rename, or reorganize code that is not related to the issue
+- Do not change SQL aliases, column names, or query logic unless explicitly asked
+- Follow the existing patterns in the codebase — don't invent new conventions
+
+Commit message format:
+- Use clear, descriptive commit messages
+- Format: "type: short description" (e.g. "fix: add null check to cleanup function")
+- Types: feat, fix, chore, docs, refactor
+
+When in doubt, do less — a focused minimal change is always preferred over a broad improvement.
