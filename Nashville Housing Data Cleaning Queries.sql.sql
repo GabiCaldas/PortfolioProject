@@ -32,7 +32,8 @@ ALTER TABLE NashvilleHousing
 Add SaleDateUpdated Date;
 
 -- Populate the pre-existing SaleDateConverted column with the converted date values
--- (Note: SaleDateUpdated above is a separate column added for future use)
+-- (Note: SaleDateUpdated above is added but never populated in this script;
+--  SaleDateConverted is the column actually used downstream)
 UPDATE NashvilleHousing
 SET SaleDateConverted = CONVERT(Date, SaleDate)
 
@@ -180,7 +181,7 @@ Select SoldAsVacant
 , CASE When SoldAsVacant = 'Y' THEN 'Yes'
 		When SoldAsVacant = 'N' THEN 'No'
 		ELSE SoldAsVacant  -- leave 'Yes'/'No' unchanged
-		END
+		END AS SoldAsVacantNormalized
 From PortfolioProject.dbo.NashvilleHousing
 
 
