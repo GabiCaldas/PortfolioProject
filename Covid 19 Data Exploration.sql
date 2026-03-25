@@ -1,6 +1,16 @@
 /*
-Covid 19 Data Exploration
-
+  File: Covid 19 Data Exploration.sql
+  Author: Gabriela Caldas
+  Date: 2024
+  Description: Exploratory analysis of global Covid-19 data using SQL,
+               covering deaths, infection rates, and vaccination rollout
+               across countries and continents.
+  Data Source: Covid-19 public dataset (Our World in Data)
+  Key Metrics: - Death rates (total deaths vs total cases)
+               - Infection rates (total cases vs population)
+               - Countries and continents with highest death counts
+               - Global case and death totals
+               - Vaccination progress (rolling people vaccinated vs population)
 */
 
 SELECT *
